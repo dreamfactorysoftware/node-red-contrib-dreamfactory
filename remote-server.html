@@ -1,5 +1,5 @@
 <script type="text/javascript">
-    RED.nodes.registerType('dreamfactory-servers',{
+    RED.nodes.registerType('remote-server',{
         category: 'config',
         defaults: {
             host: {value:"localhost",required:true},
@@ -11,7 +11,7 @@
     });
 </script>
 
-<script type="text/x-red" data-template-name="dreamfactory-servers">
+<script type="text/x-red" data-template-name="remote-server">
     <div class="form-row">
         <label for="node-config-input-host"><i class="icon-bookmark"></i> Host</label>
         <input type="text" id="node-config-input-host">
