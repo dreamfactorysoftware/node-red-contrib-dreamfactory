@@ -44,8 +44,10 @@ module.exports = function(RED) {
     }
 
 
-    function DreamFactoryIn(n) {
+    function DreamFactoryIn(n, config) {
         RED.nodes.createNode(this,n);
+        RED.nodes.createNode(this,config);
+        this.server = RED.nodes.getNode(config.server);
         if (RED.settings.httpNodeRoot !== false) {
 
             this.url = n.url;
@@ -142,8 +144,10 @@ module.exports = function(RED) {
     }
     RED.nodes.registerType("dreamfactory response",DreamFactoryOut);
 
-    function DreamFactoryRequest(n) {
+    function DreamFactoryRequest(n, config) {
         RED.nodes.createNode(this,n);
+        RED.nodes.createNode(this,config);
+        this.server = RED.nodes.getNode(config.server);
         var nodeUrl = n.url;
         var isTemplatedUrl = (nodeUrl||"").indexOf("{{") != -1;
         var nodeMethod = n.method || "GET";
@@ -157,6 +161,9 @@ module.exports = function(RED) {
                 url = mustache.render(nodeUrl,msg);
             } else {
                 url = nodeUrl;
+            }
+            if (this.server) {
+                url = this.server;
             }
             // url must start http:// or https:// so assume http:// if not set
             if (!((url.indexOf("http://")===0) || (url.indexOf("https://")===0))) {

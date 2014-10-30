@@ -25,8 +25,8 @@
         </select>
     </div>
     <div class="form-row">
-        <label for="node-input-url"><i class="fa fa-globe"></i> url</label>
-        <input type="text" id="node-input-url" placeholder="/url">
+        <label for="node-input-server"><i class="fa fa-globe"></i> url</label>
+        <input type="text" id="node-input-server" placeholder="DSP URL">
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
@@ -94,8 +94,8 @@
         </select>
     </div>
     <div class="form-row">
-        <label for="node-input-url"><i class="fa fa-globe"></i> URL</label>
-        <input type="text" id="node-input-url" placeholder="http://">
+        <label for="node-input-server"><i class="fa fa-globe"></i> URL</label>
+        <input type="text" id="node-input-server" placeholder="http://">
     </div>
     <div class="form-row">
         <label>&nbsp;</label>
@@ -145,9 +145,7 @@
         category: 'input',
         color:"rgb(231, 231, 174)",
         defaults: {
-            name: {value:""},
-            url: {value:"",required:true},
-            method: {value:"get",required:true}
+            server: {value:"", type:"remote-server"},
         },
         inputs:0,
         outputs:1,
@@ -183,7 +181,7 @@
         category: 'output',
         color:"rgb(231, 231, 174)",
         defaults: {
-            name: {value:""}
+            server: {value:"", type:"remote-server"},
         },
         inputs:1,
         outputs:0,
@@ -201,11 +199,7 @@
         category: 'function',
         color:"rgb(231, 231, 174)",
         defaults: {
-            name: {value:""},
-            method:{value:"GET"},
-            url:{value:""},
-            //user -> credentials
-            //pass -> credentials
+            server: {value:"", type:"remote-server"},
         },
         credentials: {
             user: {type:"text"},
