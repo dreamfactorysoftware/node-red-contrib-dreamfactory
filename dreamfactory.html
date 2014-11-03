@@ -83,19 +83,20 @@
     </ul>
 </script>
 
-<script type="text/x-red" data-template-name="dreamfactory">
+<script type="text/x-red" data-template-name="dreamfactory request">
     <div class="form-row">
         <label for="node-input-method"><i class="fa fa-tasks"></i> Method</label>
         <select type="text" id="node-input-method" style="width:72%;">
         <option value="GET">GET</option>
         <option value="POST">POST</option>
         <option value="PUT">PUT</option>
+        <option value="MERGE">MERGE</option>
         <option value="DELETE">DELETE</option>
         </select>
     </div>
     <div class="form-row">
-        <label for="node-input-server"><i class="fa fa-globe"></i> URL</label>
-        <input type="text" id="node-input-server" placeholder="http://">
+        <label for="node-input-url"><i class="fa fa-globe"></i> URL</label>
+        <input type="text" id="node-input-url" placeholder="http://">
     </div>
     <div class="form-row">
         <label>&nbsp;</label>
@@ -116,7 +117,7 @@
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="dreamfactory">
+<script type="text/x-red" data-help-name="dreamfactory request">
     <p>Provides a node for making http requests.</p>
     <p>The URL and HTTP method can be configured in the node, but also
        overridden by the incoming message:
@@ -144,9 +145,9 @@
     RED.nodes.registerType('dreamfactory in',{
         category: 'input',
         color:"rgb(231, 231, 174)",
-        defaults: {
-            server: {value:"", type:"remote-server"},
-        },
+//        defaults: {
+//            server: {value:"", type:"remote-server"},
+//        },
         inputs:0,
         outputs:1,
         icon: "white-globe.png",
@@ -180,9 +181,9 @@
     RED.nodes.registerType('dreamfactory response',{
         category: 'output',
         color:"rgb(231, 231, 174)",
-        defaults: {
-            server: {value:"", type:"remote-server"},
-        },
+//        defaults: {
+//            server: {value:"", type:"remote-server"},
+//        },
         inputs:1,
         outputs:0,
         align: "right",
@@ -195,11 +196,13 @@
         }
     });
 
-    RED.nodes.registerType('dreamfactory',{
+    RED.nodes.registerType('dreamfactory request',{
         category: 'function',
         color:"rgb(231, 231, 174)",
         defaults: {
-            server: {value:"", type:"remote-server"},
+            url: {value:"https://dsp-x.cloud.dreamfactory.com/rest/db/todo?app_name=todoangular"},
+            headers : {"X-DREAMFACTORY-APPLICATION-NAME": "todoangular"},
+            method : {value:"GET"}
         },
         credentials: {
             user: {type:"text"},
@@ -233,6 +236,6 @@
                     $('#node-input-password').val('');
                 }
             });
-        },
+        }
     });
 </script>

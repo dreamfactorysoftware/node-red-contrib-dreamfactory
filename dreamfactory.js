@@ -46,12 +46,12 @@ module.exports = function(RED) {
 
     function DreamFactoryIn(n, config) {
         RED.nodes.createNode(this,n);
-        RED.nodes.createNode(this,config);
-        this.server = RED.nodes.getNode(config.server);
+        //RED.nodes.createNode(this,config);
+        //var server = RED.nodes.getNode(config.server);
         if (RED.settings.httpNodeRoot !== false) {
 
-            this.url = n.url;
-            this.method = n.method;
+            this.url = server;
+            this.method = n.url;
 
             var node = this;
 
@@ -143,11 +143,13 @@ module.exports = function(RED) {
         });
     }
     RED.nodes.registerType("dreamfactory response",DreamFactoryOut);
-
+    var config = RED.nodes.getNode(config);
     function DreamFactoryRequest(n, config) {
+
         RED.nodes.createNode(this,n);
-        RED.nodes.createNode(this,config);
-        this.server = RED.nodes.getNode(config.server);
+
+        //var server = RED.nodes.getNode(config.server);
+
         var nodeUrl = n.url;
         var isTemplatedUrl = (nodeUrl||"").indexOf("{{") != -1;
         var nodeMethod = n.method || "GET";
@@ -162,9 +164,9 @@ module.exports = function(RED) {
             } else {
                 url = nodeUrl;
             }
-            if (this.server) {
-                url = this.server;
-            }
+//            if (server) {
+//                url = server;
+//            }
             // url must start http:// or https:// so assume http:// if not set
             if (!((url.indexOf("http://")===0) || (url.indexOf("https://")===0))) {
                 url = "http://"+url;
@@ -239,7 +241,7 @@ module.exports = function(RED) {
         });
     }
 
-    RED.nodes.registerType("dreamfactory",DreamFactoryRequest,{
+    RED.nodes.registerType("dreamfactory request",DreamFactoryRequest,{
         credentials: {
             user: {type:"text"},
             password: {type: "password"}
