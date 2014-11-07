@@ -43,114 +43,17 @@ module.exports = function(RED) {
         });
     }
 
+    function DreamFactoryRequest(config) {
 
-    function DreamFactoryIn(n, config) {
-        RED.nodes.createNode(this,n);
-        //RED.nodes.createNode(this,config);
-        //var server = RED.nodes.getNode(config.server);
-        if (RED.settings.httpNodeRoot !== false) {
+        RED.nodes.createNode(this,config);
+        this.server = RED.nodes.getNode(config.server);
+        var n = this.server;
 
-            this.url = server;
-            this.method = n.url;
-
-            var node = this;
-
-            this.errorHandler = function(err,req,res,next) {
-                node.warn(err);
-                res.send(500);
-            };
-
-            this.callback = function(req,res) {
-                if (node.method == "post") {
-                    node.send({req:req,res:res,payload:req.body});
-                } else if (node.method == "get") {
-                    node.send({req:req,res:res,payload:req.query});
-                } else {
-                    node.send({req:req,res:res});
-                }
-            }
-
-            var corsHandler = function(req,res,next) { next(); }
-
-            if (RED.settings.httpNodeCors) {
-                corsHandler = cors(RED.settings.httpNodeCors);
-                RED.httpNode.options(this.url,corsHandler);
-            }
-
-            if (this.method == "get") {
-                RED.httpNode.get(this.url,corsHandler,this.callback,this.errorHandler);
-            } else if (this.method == "post") {
-                RED.httpNode.post(this.url,corsHandler,jsonParser,urlencParser,rawBodyParser,this.callback,this.errorHandler);
-            } else if (this.method == "put") {
-                RED.httpNode.put(this.url,corsHandler,jsonParser,urlencParser,rawBodyParser,this.callback,this.errorHandler);
-            } else if (this.method == "delete") {
-                RED.httpNode.delete(this.url,corsHandler,this.callback,this.errorHandler);
-            }
-
-            this.on("close",function() {
-                var routes = RED.httpNode.routes[this.method];
-                for (var i = 0; i<routes.length; i++) {
-                    if (routes[i].path == this.url) {
-                        routes.splice(i,1);
-                        //break;
-                    }
-                }
-                if (RED.settings.httpNodeCors) {
-                    var route = RED.httpNode.route['options'];
-                    for (var j = 0; j<route.length; j++) {
-                        if (route[j].path == this.url) {
-                            route.splice(j,1);
-                            //break;
-                        }
-                    }
-                }
-            });
-        } else {
-            this.warn("Cannot create http-in node when httpNodeRoot set to false");
+        var nodeUrl = n.host;
+        if(n.port != ""){
+            nodeUrl += ":" + n.port;
         }
-    }
-    RED.nodes.registerType("dreamfactory in",DreamFactoryIn);
-
-
-    function DreamFactoryOut(n) {
-        RED.nodes.createNode(this,n);
-        var node = this;
-        this.on("input",function(msg) {
-            if (msg.res) {
-                if (msg.headers) {
-                    msg.res.set(msg.headers);
-                }
-                var statusCode = msg.statusCode || 200;
-                if (typeof msg.payload == "object" && !Buffer.isBuffer(msg.payload)) {
-                    msg.res.jsonp(statusCode,msg.payload);
-                } else {
-                    if (msg.res.get('content-length') == null) {
-                        var len;
-                        if (msg.payload == null) {
-                            len = 0;
-                        } else if (typeof msg.payload == "number") {
-                            len = Buffer.byteLength(""+msg.payload);
-                        } else {
-                            len = Buffer.byteLength(msg.payload);
-                        }
-                        msg.res.set('content-length', len);
-                    }
-                    msg.res.send(statusCode,msg.payload);
-                }
-            } else {
-                node.warn("No response object");
-            }
-        });
-    }
-    RED.nodes.registerType("dreamfactory response",DreamFactoryOut);
-    var config = RED.nodes.getNode(config);
-    function DreamFactoryRequest(n, config) {
-
-        RED.nodes.createNode(this,n);
-
-        //var server = RED.nodes.getNode(config.server);
-
-        var nodeUrl = n.url;
+        nodeUrl += n.path + "?app_name=" + n.app_name;
         var isTemplatedUrl = (nodeUrl||"").indexOf("{{") != -1;
         var nodeMethod = n.method || "GET";
         var node = this;
@@ -164,9 +67,6 @@ module.exports = function(RED) {
             } else {
                 url = nodeUrl;
             }
-//            if (server) {
-//                url = server;
-//            }
             // url must start http:// or https:// so assume http:// if not set
             if (!((url.indexOf("http://")===0) || (url.indexOf("https://")===0))) {
                 url = "http://"+url;
@@ -241,7 +141,7 @@ module.exports = function(RED) {
         });
     }
 
-    RED.nodes.registerType("dreamfactory request",DreamFactoryRequest,{
+    RED.nodes.registerType("dreamfactory",DreamFactoryRequest,{
         credentials: {
             user: {type:"text"},
             password: {type: "password"}
