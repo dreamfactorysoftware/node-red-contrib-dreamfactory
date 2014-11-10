@@ -55,7 +55,7 @@ module.exports = function(RED) {
         }
         nodeUrl += n.path + "?app_name=" + n.app_name;
         var isTemplatedUrl = (nodeUrl||"").indexOf("{{") != -1;
-        var nodeMethod = n.method || "GET";
+        var nodeMethod = n.x_method || "GET";
         var node = this;
         this.on("input",function(msg) {
             node.status({fill:"blue",shape:"dot",text:"requesting"});
