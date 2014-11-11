@@ -5,6 +5,7 @@ module.exports = function (RED) {
         this.host = n.host;
         this.path = n.path;
         this.app_name = n.app_name;
+        this.x_params = n.x_params;
         this.port = n.port;
     }
 

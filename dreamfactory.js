@@ -53,7 +53,11 @@ module.exports = function(RED) {
         if(n.port != ""){
             nodeUrl += ":" + n.port;
         }
-        nodeUrl += n.path + "?app_name=" + n.app_name;
+        var query_params = "";
+        if(n.x_params){
+            query_params = "&" + query_params;
+        }
+        nodeUrl += n.path + "?app_name=" + n.app_name + query_params;
         var isTemplatedUrl = (nodeUrl||"").indexOf("{{") != -1;
         var nodeMethod = n.x_method || "GET";
         var node = this;

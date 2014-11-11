@@ -6,6 +6,7 @@
             host: {value:"localhost",required:true},
             path : {value : "/rest/db/todo", required: true},
             app_name : {value:"todoangular", required:true},
+            x_params : {value: "", required:false},
             port : {value: "", required: false}
         },
         label: function() {
@@ -13,7 +14,11 @@
             if(this.port != ""){
                 display_port = ":" + this.port;
             }
-            return this.x_method + "&nbsp" + this.host+display_port + this.path + "?app_name=" + this.app_name;
+            var display_params = "";
+            if(this.x_params != ""){
+                display_params = "&" + this.x_params;
+            }
+            return this.x_method + "&nbsp" + this.host+display_port + this.path + "?app_name=" + this.app_name + display_params;
         }
     });
 </script>
@@ -40,6 +45,10 @@
     <div class="form-row">
         <label for="node-config-input-app_name"><i class="icon-bookmark"></i> Application Name</label>
         <input type="text" id="node-config-input-app_name">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-x_params"><i class="icon-bookmark"></i> Query Params</label>
+        <input type="text" id="node-config-input-x_params">
     </div>
     <div class="form-row">
         <label for="node-config-input-port"><i class="icon-bookmark"></i> Port</label>
