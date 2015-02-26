@@ -1,0 +1,72 @@
+[
+  {
+    "id": "8b455f80.015a9",
+    "type": "remote-server",
+    "x_method": "POST",
+    "host": "http://localhost",
+    "path": "/rest/db/iot",
+    "app_name": "iot",
+    "x_params": "fields=request_date,device_id,temp",
+    "port": ""
+  },
+  {
+    "id": "4a53908b.b5ac7",
+    "type": "inject",
+    "name": "Inject",
+    "topic": "",
+    "payload": "",
+    "payloadType": "none",
+    "repeat": "60",
+    "crontab": "",
+    "once": true,
+    "x": 106,
+    "y": 46,
+    "z": "4343f7e6.bcbc08",
+    "wires": [
+      [
+        "9ef944d0.6106b8"
+      ]
+    ]
+  },
+  {
+    "id": "b42b04da.4bd4f8",
+    "type": "debug",
+    "name": "Result",
+    "active": true,
+    "console": "false",
+    "complete": "payload",
+    "x": 686,
+    "y": 323,
+    "z": "4343f7e6.bcbc08",
+    "wires": []
+  },
+  {
+    "id": "40eceef4.bf131",
+    "type": "dreamfactory",
+    "server": "8b455f80.015a9",
+    "name": "Create Records",
+    "x": 495,
+    "y": 220,
+    "z": "4343f7e6.bcbc08",
+    "wires": [
+      [
+        "b42b04da.4bd4f8"
+      ]
+    ]
+  },
+  {
+    "id": "9ef944d0.6106b8",
+    "type": "function",
+    "name": "Data Source",
+    "func": "function calcTemp(set, err) {\n  \n  if (Math.random() < 0.5) {\n\terr *= -1;\n  }\n  var result = set + Math.random() * err;\n  return Math.round((result * 10)) / 10;\n}\n\n// 3 sensors\nvar total = 3;\n// 1 new record per sensor, server sets created_date\nvar msg = {};\nmsg.payload = {\"record\": []};\nfor (var device = 1; device <= total; device++) {\n\tvar temp = calcTemp(device * 10, 2);\n\tmsg.payload.record.push({\"device_id\" : device, \"temp\" : temp});\n}\n\nreturn msg;",
+    "outputs": 1,
+    "x": 290,
+    "y": 120,
+    "z": "4343f7e6.bcbc08",
+    "wires": [
+      [
+        "40eceef4.bf131"
+      ]
+    ]
+  }
+]

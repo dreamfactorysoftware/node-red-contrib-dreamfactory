@@ -1,5 +1,7 @@
 module.exports = function (RED) {
+
     function RemoteServerNode(n) {
+
         RED.nodes.createNode(this, n);
         this.x_method = n.x_method;
         this.host = n.host;
@@ -9,5 +11,10 @@ module.exports = function (RED) {
         this.port = n.port;
     }
 
-    RED.nodes.registerType("remote-server", RemoteServerNode);
+    RED.nodes.registerType("remote-server", RemoteServerNode, {
+        credentials: {
+            username: {type:"text"},
+            password: {type:"password"}
+        }
+    });
 };

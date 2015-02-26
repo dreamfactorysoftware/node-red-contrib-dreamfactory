@@ -20,42 +20,22 @@ module.exports = function(RED) {
     var https = require("follow-redirects").https;
     var urllib = require("url");
     var express = require("express");
-    var getBody = require('raw-body');
     var mustache = require("mustache");
     var querystring = require("querystring");
-
     var cors = require('cors');
-    var jsonParser = express.json();
-    var urlencParser = express.urlencoded();
-
-    function rawBodyParser(req, res, next) {
-        if (req._body) { return next(); }
-        req.body = "";
-        req._body = true;
-        getBody(req, {
-            limit: '1mb',
-            length: req.headers['content-length'],
-            encoding: 'utf8'
-        }, function (err, buf) {
-            if (err) { return next(err); }
-            req.body = buf;
-            next();
-        });
-    }
 
     function DreamFactoryRequest(config) {
 
         RED.nodes.createNode(this,config);
         this.server = RED.nodes.getNode(config.server);
         var n = this.server;
-
         var nodeUrl = n.host;
         if(n.port != ""){
             nodeUrl += ":" + n.port;
         }
         var query_params = "";
         if(n.x_params){
-            query_params = "&" + query_params;
+            query_params = "&" + n.x_params;
         }
         nodeUrl += n.path + "?app_name=" + n.app_name + query_params;
         var isTemplatedUrl = (nodeUrl||"").indexOf("{{") != -1;
@@ -72,11 +52,11 @@ module.exports = function(RED) {
                 url = nodeUrl;
             }
             // url must start http:// or https:// so assume http:// if not set
-            if (!((url.indexOf("http://")===0) || (url.indexOf("https://")===0))) {
-                url = "http://"+url;
+            if (!((url.indexOf("http://") === 0) || (url.indexOf("https://") === 0))) {
+                url = "http://" + url;
             }
 
-            var method = (msg.method||nodeMethod).toUpperCase();
+            var method = (msg.method || nodeMethod).toUpperCase();
             //node.log(method+" : "+url);
             var opts = urllib.parse(url);
             opts.method = method;
@@ -94,16 +74,19 @@ module.exports = function(RED) {
                     }
                 }
             }
-            if (this.credentials && this.credentials.user) {
-                opts.auth = this.credentials.user+":"+(this.credentials.password||"");
+            if (n.credentials) {
+                var username = n.credentials.username;
+                var password = n.credentials.password;
+                if (username && password) {
+                    opts.auth = username + ":" + password;
+                }
             }
             var payload = null;
-
             if (msg.payload && (method == "POST" || method == "PUT") ) {
                 if (typeof msg.payload === "string" || Buffer.isBuffer(msg.payload)) {
                     payload = msg.payload;
                 } else if (typeof msg.payload == "number") {
-                    payload = msg.payload+"";
+                    payload = msg.payload + "";
                 } else {
                     if (opts.headers['content-type'] == 'application/x-www-form-urlencoded') {
                         payload = querystring.stringify(msg.payload);
@@ -119,7 +102,7 @@ module.exports = function(RED) {
                 }
             }
 
-            var req = ((/^https/.test(url))?https:http).request(opts,function(res) {
+            var req = ((/^https/.test(url)) ? https : http).request(opts,function(res) {
                 res.setEncoding('utf8');
                 msg.statusCode = res.statusCode;
                 msg.headers = res.headers;
@@ -145,10 +128,5 @@ module.exports = function(RED) {
         });
     }
 
-    RED.nodes.registerType("dreamfactory",DreamFactoryRequest,{
-        credentials: {
-            user: {type:"text"},
-            password: {type: "password"}
-        }
-    });
+    RED.nodes.registerType("dreamfactory", DreamFactoryRequest);
 }
