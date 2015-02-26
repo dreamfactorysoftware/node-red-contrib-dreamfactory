@@ -3,10 +3,10 @@
     "id": "8b455f80.015a9",
     "type": "remote-server",
     "x_method": "POST",
-    "host": "http://localhost",
+    "host": "localhost",
     "path": "/rest/db/iot",
     "app_name": "iot",
-    "x_params": "fields=request_date,device_id,temp",
+    "x_params": "fields=created_date,device_id,temp",
     "port": ""
   },
   {
