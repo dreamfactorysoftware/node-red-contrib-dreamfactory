@@ -6,7 +6,7 @@
     "host": "localhost",
     "path": "/rest/db/iot",
     "app_name": "iot",
-    "x_params": "fields=created_date,device_id,temp",
+    "x_params": "fields=*",
     "port": ""
   },
   {
@@ -58,7 +58,7 @@
     "id": "9ef944d0.6106b8",
     "type": "function",
     "name": "Data Source",
-    "func": "function calcTemp(set, err) {\n  \n  if (Math.random() < 0.5) {\n\terr *= -1;\n  }\n  var result = set + Math.random() * err;\n  return Math.round((result * 10)) / 10;\n}\n\n// 3 sensors\nvar total = 3;\n// 1 new record per sensor, server sets created_date\nvar msg = {};\nmsg.payload = {\"record\": []};\nfor (var device = 1; device <= total; device++) {\n\tvar temp = calcTemp(device * 10, 2);\n\tmsg.payload.record.push({\"device_id\" : device, \"temp\" : temp});\n}\n\nreturn msg;",
+    "func": "var useMongo = false;\n\nfunction calcTemp(set, err) {\n  \n  if (Math.random() < 0.5) {\n\terr *= -1;\n  }\n  var result = set + Math.random() * err;\n  return Math.round((result * 10)) / 10;\n}\n\n// 3 sensors\nvar total = 3;\nvar msg = {\n\t\"payload\": {\n\t\t\"record\": []\n\t}\n};\n// create 1 new record per sensor\nfor (var device = 1; device <= total; device++) {\n\tvar temp = calcTemp(device * 10, 2);\n\trecord = {\"device_id\" : device, \"temp\" : temp};\n\t// server will add date\n\tif (useMongo) {\n\t\trecord.created_date = {\"$date\" : \"\"};\n\t} else {\n\t\trecord.created_date = \"\";\n\t}\n\tmsg.payload.record.push(record);\n}\n\nreturn msg;",
     "outputs": 1,
     "x": 290,
     "y": 120,
