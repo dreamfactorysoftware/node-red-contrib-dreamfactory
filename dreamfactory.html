@@ -1,3 +1,4 @@
+
 <script type="text/x-red" data-template-name="dreamfactory">
 
     <div class="form-row">
@@ -11,20 +12,74 @@
 </script>
 
 <script type="text/x-red" data-help-name="dreamfactory">
-    <p>Provides a node for making REST calls to your DreamFactory API. When creating records on a SQL db, the payload must match the schema for the table you are POSTing to.</p>
-    <p>The URL and HTTP method can be configured in the node, but also
-       overridden by the incoming message:
+    <p>Provides a node for making REST calls to your DreamFactory API. Like the HTTP node you can have mustache-style tags that are populated from the incoming message object.</p>
 
-    <p>When configured within the node, the URL property can contain <a href="http://mustache.github.io/mustache.5.html" target="_new">mustache-style</a> tags. These allow the
-    url to be constructed using values of the incoming message. For example, if the url is set to
-    <code>example.com/{{topic}}</code>, it will have the value of <code>msg.topic</code> automatically inserted.</p>
+    <p>Input message:</p>
+
+    <p>The input message payload depends on the HTTP method configured in the DreamFactory node.</p>
+
+    <ul>
+        <li><code>POST</code> - create records</li>
+        <li><code>GET</code> - retrieve records</li>
+        <li><code>PUT/MERGE</code> - update records</li>
+        <li><code>DELETE</code> - delete records</li>
+    </ul>
+
+    <p>When creating records on a SQL db, msg.payload.record must match the schema for the table you are POSTing to. When creating records on a NoSQL db, msg.payload.record can be anything.</p>
+    </p>
     <p>
-    The output message contains the following properties:
+    <pre><code>
+    // to create records (Method = POST)
+
+    var msg = {
+        "payload": {
+            // DreamFactory server will set created_date
+            "record": [
+		        {"device_id" : 1, "temp" : 30.5, "created_date: ""},
+		        {"device_id" : 2, "temp" : 27.0, "created_date: ""}
+            ];
+	    }
+    };
+    </code></pre>
+    </p>
+   <p>
+    <pre><code>
+    // to retrieve records (Method = GET)
+
+    add query param 'filter' to DreamFactory node
+
+    filter="device_id = 2 and temp > 20.0"
+    </code></pre>
+    </p>
+    <p>
+    <pre><code>
+    // to update records (Method = PUT/MERGE)
+
+    var msg = {
+	    "payload": {
+		    "id": 1,
+		    "temp": 37.6
+	    }
+    };
+    </code></pre>
+    </p>
+    <p>
+    <pre><code>
+    // to delete records (Method = DELETE)
+
+    add query param 'ids' to DreamFactory node
+
+    ids="1,2,3"
+    </code></pre>
+    </p>
+    <p>
+    Output message is the same as the HTTP node:
     <ul>
         <li><code>payload</code> is the body of the response</li>
         <li><code>statusCode</code> is the status code of the response, or the error code if the request could not be completed</li>
         <li><code>headers</code> is an object containing the response headers</li>
     </ul>
+    </p>
 </script>
 
 <script type="text/javascript">
