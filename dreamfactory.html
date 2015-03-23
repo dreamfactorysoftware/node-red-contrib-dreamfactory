@@ -48,7 +48,11 @@
 
     add query param 'filter' to DreamFactory node
 
-    filter="device_id = 2 and temp > 20.0"
+    filter=device_id=2 and temp>20.0
+
+    It's recommended to encode like
+
+    filter=device_id%3D2%20and%20temp%3E20.0
     </code></pre>
     </p>
     <p>
